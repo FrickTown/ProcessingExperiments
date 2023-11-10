@@ -47,7 +47,7 @@ public class Flipper extends PApplet {
                 throw new RuntimeException(e);
             }
         }
-        background(15, 2, 32);
+        background(97 + 180/2f, 163, 186 - 180/4f);
         //translate(-tileSize.X/2, -tileSize.Y/2);
         for(Tile[] y : Tiles){
             pushMatrix();
@@ -61,7 +61,7 @@ public class Flipper extends PApplet {
                     throw new RuntimeException(e);
                 }
                 pushMatrix();
-                stroke(210, 222, 50);
+                stroke(60 + x.yaw/2f, 100, 150 - x.yaw/4f);
                 fill(97 + x.yaw/2f, 163, 186 - x.yaw/4f);
                 translate(x.x + tileSize.X/2, 0);
                 rotateX(radians(x.pitch));
