@@ -38,6 +38,10 @@ public class Flipper extends PApplet {
                     Tiles[mousedTile.Y][mousedTile.X].initYawAnim();
                 else if(mouseDown && mouseButton == RIGHT)
                     Tiles[mousedTile.Y][mousedTile.X].initRadialYawAnim();
+                else if(mouseDown && mouseButton == CENTER){
+                    mouseDown = false;
+                    println(Tiles[mousedTile.Y][mousedTile.X].toString());
+                }
 
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);

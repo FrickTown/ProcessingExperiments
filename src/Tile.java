@@ -71,15 +71,13 @@ public class Tile {
     public void radialYawAnim() throws NoSuchMethodException {
         if(!reduceYaw) {
             yaw += 4f;
-            if (yaw > 361) {
+            if (yaw == 360) {
                 reduceYaw = true;
-                yaw -= 4f;
             }
         }
         else if (reduceYaw){
             yaw -= 4;
-            if (yaw < -1) {
-                yaw += 4f;
+            if (yaw == 0) {
                 reduceYaw = false;
             }
         }
@@ -91,10 +89,11 @@ public class Tile {
                     x.initRadialYawAnim();
             }
         }
-        if(yaw % 180 == 0){
+        if(yaw % 180 == 0 || yaw % 360 == 0){
             activeAnim = null;
             idle = true;
             allowInfect = true;
+            infectTick = 0;
         }
     }
 
@@ -114,5 +113,9 @@ public class Tile {
         }
 
         return returnable;
+    }
+
+    public String toString(){
+        return String.format("tileX: %s tileY: %s yaw: %s infectTick: %s\nidle: %s reduceYaw: %s allowInfect: %s", tileX, tileY, yaw, infectTick, idle, reduceYaw, allowInfect);
     }
 }
