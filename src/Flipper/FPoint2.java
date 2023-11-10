@@ -1,3 +1,5 @@
+package Flipper;
+
 public class FPoint2 {
     public float X,Y;
     public FPoint2(float x, float y){

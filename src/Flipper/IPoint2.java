@@ -1,3 +1,5 @@
+package Flipper;
+
 public class IPoint2 {
     public int X,Y;
     public IPoint2(int x, int y){

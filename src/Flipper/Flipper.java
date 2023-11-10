@@ -1,3 +1,5 @@
+package Flipper;
+
 import processing.core.PApplet;
 
 import java.lang.reflect.InvocationTargetException;
