@@ -14,8 +14,8 @@ public class Sketch1 extends PApplet {
     ArrayList<Vertex> vertices;
     public void setup(){
         vertices = new ArrayList<Vertex>();
-        for(int i = 0; i < 30; i++){
-            var x = new Vertex(this, width/2f, height/2f);
+        for(int i = 0; i < 6; i++){
+            var x = new Vertex(this, width/2f + random(-15, 15), height/2f + random(-15, 15));
             vertices.add(x);
         }
     }
@@ -25,10 +25,10 @@ public class Sketch1 extends PApplet {
         background(Color.GRAY.getRGB());
         fill(Color.BLACK.getRGB());
         for(Vertex x : vertices){
-            x.nearestNeighbors = Vertex.findNearestNeighbors(x, vertices, 5);
+            x.nearestNeighbors = Vertex.findNearestNeighbors(x, vertices, 3);
             x.update();
             strokeWeight(1);
-            circle(x.pos.x, x.pos.y, 15f);
+            circle(x.pos.x, x.pos.y, x.nodeRadius);
             stroke(Color.blue.getRGB());
             strokeWeight(3);
             for(Vertex neighbor : x.nearestNeighbors){
