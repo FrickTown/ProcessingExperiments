@@ -2,7 +2,9 @@ package PixelSorting;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.data.IntList;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -13,28 +15,39 @@ public class Sketch1 extends PApplet {
     int modularThreshold = blackThreshold;
     int brightThreshold = 60;
     int whiteThreshold = -13000000;
+    int lastThreshold = blackThreshold;
     PImage img;
+    File imgFolder;
+    int imgIndex = 0;
+    String[] imgNames;
 
     public void settings(){
-        size(800, 600);
+        size(1000, 750);
     }
 
     public void setup(){
-        img = loadImage("images/1.jpg");
-        img.resize(800, 600);
+        imgFolder = new File("./images/");
+        imgNames = imgFolder.list();
+        reloadImage();
     }
-    double ticker = 700;
+    double ticker = 200;
+    double tickerMod = 1;
     public void draw(){
-        println("MouseX: " + mouseX + " MouseY: " + mouseY);
-        ticker += 0.5;
-        double modularRatio = (ticker /(width-1));
+        //println("MouseX: " + mouseX + " MouseY: " + mouseY);
+        ticker += tickerMod;
+        tickerMod = ticker >= width-1 || ticker <= 200 ? tickerMod * -1 : tickerMod;
+        double modularRatio = ((double) ticker /(width-1));
+        modularRatio = Tools.easeOutQuad(modularRatio);
+        lastThreshold = modularThreshold;
         modularThreshold = (int) (modularRatio * blackThreshold);
-        println("Modular threshold: " + ticker + "/" + (width-1) + " * " + blackThreshold + " = " + modularThreshold);
+        //modularThreshold = blackThreshold;
+        //println("Modular threshold: " + momouseXuseX + "/" + (width-1) + " * " + blackThreshold + " = " + modularThreshold);
         image(img, 0, 0);
-        for(int i = 0; i < width; i++) {
+        if(lastThreshold != modularThreshold){
             loadPixels();
-            pixels = pixels;
-            sortColumn(i);
+            for(int i = 0; i < width; i++) {
+                sortColumn(i);
+            }
             updatePixels();
         }
     }
@@ -49,20 +62,59 @@ public class Sketch1 extends PApplet {
     }
 
     public void sortColumn(int index){
-        int[] columnPixels = new int[height];
-        ArrayList<Integer> relevantPixels = new ArrayList<Integer>();
-        for(int i = 0; i < height; i++){
-            columnPixels[i] = index + (i * width);
-            if(pixels[columnPixels[i]] < modularThreshold)
-                break;
-            relevantPixels.add(pixels[columnPixels[i]]);
+        int fromPixel = findFromPixelY(index);
+        int toPixel = findToPixelY(index);
+        int sortLength = toPixel - fromPixel;
+        if(sortLength <= 1)
+            return;
+        IntList toSort = new IntList();
+        for(int i = fromPixel; i <= toPixel; i++){
+            toSort.append(pixels[index + (i*width)]);
         }
-        relevantPixels.sort(Comparator.naturalOrder());
-        for(int i = 0; i < relevantPixels.size(); i++){
-            pixels[columnPixels[i]] = relevantPixels.get(i);
+        toSort.sort();
+        int j = fromPixel;
+        for(int i = 0; i < toSort.size(); i++){
+            pixels[index + (j*width)] = toSort.get(i);
+            j++;
         }
+    }
+
+    int findFromPixelY(int index){
+        int i = 0;
+        while(i < height){
+            if(pixels[index + (i * width)] > modularThreshold)
+                return i;
+            i++;
+        }
+        return height-1;
+    }
+
+    int findToPixelY(int index){
+        int i = 0;
+        while(i < height){
+            if(pixels[index + (i * width)] < modularThreshold)
+                return i;
+            i++;
+        }
+        return height-1;
     }
     public void sortRow(int index){
 
+    }
+
+    public void reloadImage(){
+        img = loadImage("images/"+imgNames[imgIndex]);
+        img.resize(1000, 750);
+    }
+
+    public void keyReleased(){
+        if(keyCode == RIGHT){
+            imgIndex = imgIndex == imgNames.length-1 ? 0 : imgIndex + 1;
+            reloadImage();
+        }
+        else if (keyCode == LEFT){
+            imgIndex = imgIndex == 0 ? imgNames.length -1 : imgIndex - 1;
+            reloadImage();
+        }
     }
 }
