@@ -1,10 +1,9 @@
-package PixelSorting;
+package Sketchtools;
 
 import Flipper.IPoint2;
 import Sketchtools.FlowField;
 import Sketchtools.LineDrawer;
-import processing.core.PApplet;
-import processing.core.PVector;
+import processing.core.*;
 
 import java.util.ArrayList;
 
@@ -36,24 +35,28 @@ public class Tools {
 
     }
 
-    public static void DrawFlowArrows(FlowField field, float intensity, int alpha){
-        PApplet sketch = field.getParent();
-        for(int i = 0; i < field.getField().length; i++){
-            for(int j = 0; j < field.getField()[i].length; j++){
-                PVector pos = field.getPointAtIndex(j, i);
-                PVector val = field.getFlowAtIndex(j, i).mult(intensity);
+    public static PGraphics DrawFlowArrows(FlowField field, float intensity, int alpha, int skip){
+        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight());
+        out.beginDraw();
+        for(int i = 0; i < field.getField().length; i += skip){
+            for(int j = 0; j < field.getField()[i].length; j += skip){
+                PVector pos = field.getPointAtIndex(j, i).copy();
+                PVector val = field.getFlowAtIndex(j, i).copy();
                 if(val.x == 0 && val.y == 0)
                     continue;
-                sketch.stroke(0, 0, 0, alpha);
-                sketch.strokeWeight(3);
+                out.stroke(0, 0, 0, alpha);
+                out.strokeWeight(3);
                 pos = field.planeToWindow(pos);
-                sketch.line(pos.x, pos.y, pos.x + val.x,pos.y + val.y);
-                sketch.fill(100, 140, 255, alpha);
-                sketch.circle(pos.x, pos.y, 6);
-                sketch.fill(255, 130, 100, alpha);
-                sketch.circle(pos.x + val.x, pos.y + val.y, 3);
+                PVector endPoint = new PVector(pos.x + (val.x * intensity * val.z), pos.y + (val.y * intensity * val.z));
+                out.line(pos.x, pos.y, endPoint.x,endPoint.y);
+                out.fill(100, 140, 255, alpha);
+                out.circle(pos.x, pos.y, 6);
+                out.fill(255, 130, 100, 255);
+                out.circle(endPoint.x, endPoint.y, 3);
             }
         }
+        out.endDraw();
+        return out;
     }
 
     public ArrayList<IPoint2> GetCircularSelection(FlowField field, PVector pos, float radius){

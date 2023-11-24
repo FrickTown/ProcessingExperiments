@@ -6,13 +6,13 @@ import java.util.ArrayList;
 
 public class LineDrawer {
     private PVector pos;
-    private PVector vel;
+    private PVector dir;
     private int lifeRemaining;
     private ArrayList<PVector> calculatedPoints;
 
-    public LineDrawer(PVector pos, PVector vel, int lifeTime) {
+    public LineDrawer(PVector pos, PVector dir, int lifeTime) {
         this.pos = pos;
-        this.vel = vel;
+        this.dir = dir;
         this.lifeRemaining = lifeTime;
         calculatedPoints = new ArrayList<PVector>();
         calculatedPoints.add(pos);
@@ -26,12 +26,12 @@ public class LineDrawer {
         this.pos = pos;
     }
 
-    public PVector getVel() {
-        return vel;
+    public PVector getDir() {
+        return dir;
     }
 
-    public void setVel(PVector vel) {
-        this.vel = vel;
+    public void setDir(PVector dir) {
+        this.dir = dir;
     }
 
     public int getLifeRemaining() {
@@ -47,7 +47,8 @@ public class LineDrawer {
     }
 
     public void takeStep(){
-        pos.add(vel);
+        pos.x += (dir.x * dir.z);
+        pos.y += (dir.y * dir.z);
         calculatedPoints.add(pos.copy());
         lifeRemaining--;
     }

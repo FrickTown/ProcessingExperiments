@@ -1,12 +1,11 @@
 package PixelSorting;
 
+import Sketchtools.Tools;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.data.IntList;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Sketch1 extends PApplet {
     //Modes: 0 - Black, 1 - Brightness, 2 - White

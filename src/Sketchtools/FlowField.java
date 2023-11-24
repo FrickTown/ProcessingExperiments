@@ -89,6 +89,13 @@ public class FlowField {
         PVector flow = getFlowAtPoint(toInfluence.getPos().x, toInfluence.getPos().y);
         if(flow == null)
             return;
-        toInfluence.setVel(flow);
+        toInfluence.setDir(flow);
+    }
+
+    public void influenceLinedrawerDynamic(LineDrawer toInfluence){
+        PVector flow = getFlowAtPoint(toInfluence.getPos().x, toInfluence.getPos().y);
+        if(flow == null)
+            return;
+        PVector newFlow = PVector.lerp(toInfluence.getDir(), flow, flow.z);
     }
 }
