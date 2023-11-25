@@ -5,6 +5,7 @@ import Sketchtools.FlowField;
 import Sketchtools.LineDrawer;
 import processing.core.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Tools {
@@ -58,6 +59,24 @@ public class Tools {
         out.endDraw();
         return out;
     }
+    public static PGraphics GenerateHeatMapZ (FlowField field, int skip){
+        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight());
+        int lowColor = Color.decode("#285bd1").getRGB();
+        int highColor = Color.decode("#d1283b").getRGB();
+        out.beginDraw();
+        for(int i = 0; i < field.getField().length; i+=skip) {
+            for (int j = 0; j < field.getField()[i].length; j+=skip) {
+                PVector pos = field.getPointAtIndex(j, i).copy();
+                pos = field.planeToWindow(pos);
+                PVector val = field.getFlowAtIndex(j, i).copy();
+                out.noStroke();
+                out.fill(PGraphics.lerpColor(lowColor, highColor, val.z, PConstants.RGB));
+                out.circle(pos.x, pos.y, 10);
+            }
+        }
+        out.endDraw();
+        return out;
+    }
 
     public ArrayList<IPoint2> GetCircularSelection(FlowField field, PVector pos, float radius){
         ArrayList<IPoint2> out = new ArrayList<IPoint2>();
@@ -78,6 +97,16 @@ public class Tools {
     public static void HealDrawers(ArrayList<LineDrawer> drawers, int hp){
         for(LineDrawer x : drawers){
             x.setLifeRemaining(hp);
+        }
+    }
+
+    public static void ResetDrawers(ArrayList<LineDrawer> drawers, FlowField field){
+        for(LineDrawer x : drawers){
+            x.setPos(x.getOriginalPos().copy());
+            x.setDir(field.getFlowAtPoint(x.getOriginalPos().copy()).copy());
+            x.setLifeRemaining(x.getOriginalHP());
+            x.getCalculatedPoints().clear();
+            x.getCalculatedPoints().add(x.getOriginalPos().copy());
         }
     }
 }

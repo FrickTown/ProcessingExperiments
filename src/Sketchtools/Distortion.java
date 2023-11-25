@@ -25,11 +25,19 @@ public class Distortion {
                     continue;
                 //Calculate the direction of the new flow (towards center)
                 PVector fromPointToCenter = pos.copy().sub(testPoint).normalize();
+                if(!negative)
+                    fromPointToCenter = fromPointToCenter.mult(-1);
                 //Get the original, undistorted flow
                 PVector unDistorted = field.getFlowAtIndex(j, i);
-                float calcIntensity = PApplet.map(dist, radius, 0, 0, 1);
-                fromPointToCenter.z = negative ? calcIntensity : -calcIntensity;
-                field.setFlowAtIndex(j, i, fromPointToCenter);
+                //Get the intensity
+                //float adjustedIntensity = PApplet.map(intensity, 0, 255, 1f, 10);
+                //dist == radius => 0.05 => ease(0.05) => close to beginning (1)
+                //dist == 0 => 0.99 => ease(1) => close to end (0);
+                float calcIntensity = PApplet.map(dist, 0, radius, 0.5f, 0.05f);
+                calcIntensity = (float) Tools.easeOutCirc((double) calcIntensity);
+                fromPointToCenter.z = calcIntensity;
+                PVector newFlow = PVector.lerp(unDistorted, fromPointToCenter, fromPointToCenter.z);
+                field.setFlowAtIndex(j, i, newFlow);
             }
         }
     }

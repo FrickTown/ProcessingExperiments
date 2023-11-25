@@ -97,5 +97,6 @@ public class FlowField {
         if(flow == null)
             return;
         PVector newFlow = PVector.lerp(toInfluence.getDir(), flow, flow.z);
+        toInfluence.setDir(newFlow);
     }
 }

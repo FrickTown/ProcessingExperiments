@@ -14,15 +14,20 @@ public class Sketch2 extends PApplet {
 
     FlowField field;
     ArrayList<LineDrawer> drawers;
+    ArrayList<LineDrawer> postDrawers;
     long angleSeed;
     long intensitySeed;
+    PGraphics flowArrows = null;
+    PGraphics drawnLines = null;
+    PGraphics heatMap = null;
+    boolean fullRedraw = false;
     @Override
     public void settings() {
         size(1000, 750);
     }
     @Override
     public void setup() {
-        field = new FlowField(this, 0.01f, 0.5f);
+        field = new FlowField(this, 0.005f, 0.5f);
         angleSeed = (long) random(-16000000, 16000000);
         intensitySeed = (long) random(-16000000, 16000000);
         PVector c = field.windowToPlane(new PVector((float) width /2, (float) height /2));
@@ -43,8 +48,9 @@ public class Sketch2 extends PApplet {
             }
         }
 
-        Distortion.RadialDistortion(field, field.windowToPlane(new PVector((float) width /2, (float) height /2)), 200, 1, true);
+        Distortion.RadialDistortion(field, field.windowToPlane(new PVector((float) width /2, (float) height /2)), 200, 50, true);
 
+        postDrawers = new ArrayList<LineDrawer>();
         drawers = new ArrayList<LineDrawer>();
         int size = 5;
         for(int y = 0; y < size; y+=1) {
@@ -58,38 +64,41 @@ public class Sketch2 extends PApplet {
             }
         }
     }
-    PGraphics flowArrows = null;
-    PGraphics drawnLines = null;
     public void draw() {
         background(255);
-        if(flowArrows == null){
+        if(flowArrows == null || fullRedraw){
             flowArrows = Tools.DrawFlowArrows(field, 50, 100, 2);
-
         }
         image(flowArrows, 0, 0);
+/*        if(heatMap == null || fullRedraw){
+            heatMap = Tools.GenerateHeatMapZ(field, 1);
+        }
+        image(heatMap, 0, 0);*/
         noFill();
         noStroke();
-        for(LineDrawer drawer : drawers){
-            while(drawer.getLifeRemaining() > 0){
-                field.influenceLinedrawer(drawer);
-                if(drawer.getDir() == null)
-                    break;
-                drawer.takeStep();
+        if(drawnLines == null || fullRedraw){
+            drawnLines =  createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight());
+            drawnLines.beginDraw();
+            for(LineDrawer drawer : drawers){
+                drawer.march(field);
+                drawLineDrawerPath(drawer, drawnLines);
             }
-            ArrayList<PVector> calcPoints = drawer.getCalculatedPoints();
-            for(int i = calcPoints.size() - 1; i > 0; i--) {
-                PVector x = calcPoints.get(i);
-                x = field.planeToWindow(x);
-                fill(200, 0, map(i, 0, calcPoints.size(), 0, 255));
-                circle(x.x, x.y, map(i, 0,  calcPoints.size(), 10, 0));
-                println(x);
-            }
+            drawnLines.endDraw();
+        }
+        image(drawnLines, 0, 0);
+
+        //Stuff to draw after first render
+        for(LineDrawer drawer : postDrawers) {
+            if(drawer.getCalculatedPoints().size() <= 1)
+                drawer.march(field);
+            drawLineDrawerPath(drawer);
         }
         stroke(255);
         strokeWeight(4);
         noFill();
         circle((float) width /2, (float) height /2, 400);
 
+        fullRedraw = false;
         noLoop();
     }
 
@@ -98,13 +107,40 @@ public class Sketch2 extends PApplet {
         if(mouseButton == LEFT){
             PVector pos = field.windowToPlane(new PVector(mouseX, mouseY));
             LineDrawer newDraw = new LineDrawer(pos, field.getFlowAtPoint(pos), 500);
-            //Tools.HealDrawers(drawers, 500);
-            drawers.add(newDraw);
+            postDrawers.add(newDraw);
             redraw();
         }
         else if(mouseButton == CENTER){
             saveFrame("./savedFrames/"+java.time.LocalDateTime.now().toString() + ".png");
         }
+        else if(mouseButton == RIGHT){
+            PVector pos = field.windowToPlane(new PVector(mouseX, mouseY));
+            Distortion.RadialDistortion(field, pos, 200, 50, true);
+            fullRedraw = true;
+            Tools.ResetDrawers(drawers, field);
+            Tools.ResetDrawers(postDrawers, field);
+            redraw();
+        }
+    }
 
+    public void drawLineDrawerPath(LineDrawer drawer, PGraphics context){
+        context.noStroke();
+        ArrayList<PVector> calcPoints = drawer.getCalculatedPoints();
+        for(int i = calcPoints.size() - 1; i > 0; i--) {
+            PVector x = calcPoints.get(i);
+            x = field.planeToWindow(x);
+            context.fill(200, 0, map(i, 0, calcPoints.size(), 0, 255));
+            context.circle(x.x, x.y, map(i, 0,  calcPoints.size(), 10, 0));
+        }
+    }
+
+    public void drawLineDrawerPath(LineDrawer drawer) {
+        ArrayList<PVector> calcPoints = drawer.getCalculatedPoints();
+        for(int i = calcPoints.size() - 1; i > 0; i--) {
+            PVector x = calcPoints.get(i);
+            x = field.planeToWindow(x);
+            fill(200, 0, map(i, 0, calcPoints.size(), 0, 255));
+            circle(x.x, x.y, map(i, 0,  calcPoints.size(), 10, 0));
+        }
     }
 }
