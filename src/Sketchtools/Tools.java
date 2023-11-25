@@ -37,7 +37,7 @@ public class Tools {
     }
 
     public static PGraphics DrawFlowArrows(FlowField field, float intensity, int alpha, int skip){
-        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight());
+        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight(), PConstants.P2D);
         out.beginDraw();
         for(int i = 0; i < field.getField().length; i += skip){
             for(int j = 0; j < field.getField()[i].length; j += skip){
@@ -60,7 +60,7 @@ public class Tools {
         return out;
     }
     public static PGraphics GenerateHeatMapZ (FlowField field, int skip){
-        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight());
+        PGraphics out = field.getParent().createGraphics(field.getBounds().getWidth(), field.getBounds().getHeight(), PConstants.P2D);
         int lowColor = Color.decode("#285bd1").getRGB();
         int highColor = Color.decode("#d1283b").getRGB();
         out.beginDraw();

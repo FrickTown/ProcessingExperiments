@@ -60,6 +60,14 @@ public class LineDrawer {
         lifeRemaining--;
     }
 
+    public void takeConstantStep(){
+        pos.x += (dir.x);
+        pos.y += (dir.y);
+        System.out.println("["+lifeRemaining+"] - I'm at: " + pos + ", my dir is: " + dir);
+        calculatedPoints.add(pos.copy());
+        lifeRemaining--;
+    }
+
     public void analyzeFlow(){
 
     }
@@ -70,6 +78,15 @@ public class LineDrawer {
             if(dir == null)
                 break;
             takeStep();
+        }
+    }
+
+    public void marchConstant(FlowField field){
+        while(lifeRemaining > 0){
+            field.influenceLinedrawerDynamic(this);
+            if(dir == null)
+                break;
+            takeConstantStep();
         }
     }
 
