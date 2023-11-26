@@ -38,5 +38,15 @@
     <orderEntry type="library" exported="" name="core" level="project" />
     <orderEntry type="library" exported="" name="gluegen-rt" level="project" />
     <orderEntry type="library" exported="" name="jogl-all" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/core/library/imgui-app-1.86.11-all.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" exported="" name="imgui-app-1.86.11-all" level="project" />
   </component>
 </module>

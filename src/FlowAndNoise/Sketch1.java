@@ -1,6 +1,7 @@
 package FlowAndNoise;
 
 import Flipper.FPoint2;
+import Sketchtools.ImGuiThread;
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 
@@ -74,6 +75,7 @@ public class Sketch1 extends PApplet {
 
     @Override
     public void setup() {
+        new ImGuiThread(this, Sketch1_GUI.class).start();
         leftBounds = (int) (width * -0.5);
         rightBounds = (int) (width * 1.5);
         topBounds = (int) (height * -0.5);

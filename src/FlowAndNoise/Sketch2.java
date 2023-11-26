@@ -1,18 +1,112 @@
 package FlowAndNoise;
 
-import Sketchtools.Tools;
-import Sketchtools.Distortion;
-import Sketchtools.FlowField;
-import Sketchtools.LineDrawer;
+import Sketchtools.*;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
+import imgui.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class Sketch2 extends PApplet {
+
+    public FlowField getField() {
+        return field;
+    }
+
+    public void setField(FlowField field) {
+        this.field = field;
+    }
+
+    public ArrayList<LineDrawer> getDrawers() {
+        return drawers;
+    }
+
+    public void setDrawers(ArrayList<LineDrawer> drawers) {
+        this.drawers = drawers;
+    }
+
+    public ArrayList<LineDrawer> getPostDrawers() {
+        return postDrawers;
+    }
+
+    public void setPostDrawers(ArrayList<LineDrawer> postDrawers) {
+        this.postDrawers = postDrawers;
+    }
+
+    public long getAngleSeed() {
+        return angleSeed;
+    }
+
+    public void setAngleSeed(long angleSeed) {
+        this.angleSeed = angleSeed;
+    }
+
+    public long getIntensitySeed() {
+        return intensitySeed;
+    }
+
+    public void setIntensitySeed(long intensitySeed) {
+        this.intensitySeed = intensitySeed;
+    }
+
+    public Boolean getShowDrawnLines() {
+        return showDrawnLines;
+    }
+
+    public void setShowDrawnLines(Boolean showDrawnLines) {
+        this.showDrawnLines = showDrawnLines;
+    }
+
+    public Boolean getShowFlowArrows() {
+        return showFlowArrows;
+    }
+
+    public void setShowFlowArrows(Boolean showFlowArrows) {
+        this.showFlowArrows = showFlowArrows;
+    }
+
+    public Boolean getShowHeatMap() {
+        return showHeatMap;
+    }
+
+    public void setShowHeatMap(Boolean showHeatMap) {
+        this.showHeatMap = showHeatMap;
+    }
+
+    public static int getBGColor() {
+        return BGColor;
+    }
+
+    public static void setBGColor(int BGColor) {
+        Sketch2.BGColor = BGColor;
+    }
+
+    public static int getShadeColor() {
+        return ShadeColor;
+    }
+
+    public static void setShadeColor(int shadeColor) {
+        ShadeColor = shadeColor;
+    }
+
+    public static int getLightColor() {
+        return LightColor;
+    }
+
+    public static void setLightColor(int lightColor) {
+        LightColor = lightColor;
+    }
+
+    public static int getDarkColor() {
+        return DarkColor;
+    }
+
+    public static void setDarkColor(int darkColor) {
+        DarkColor = darkColor;
+    }
 
     FlowField field;
     ArrayList<LineDrawer> drawers;
@@ -45,6 +139,8 @@ public class Sketch2 extends PApplet {
     }
     @Override
     public void setup() {
+        ImGuiThread imguiThread = new ImGuiThread(this, Sketch2_GUI.class);
+        imguiThread.start();
         //Create a new field, generate some noise (multithreaded) and distort with the distortion function above
         field = new FlowField(this, 0.005f, 0.5f);
         generateFieldNoise(field);
@@ -106,7 +202,7 @@ public class Sketch2 extends PApplet {
         for(LineDrawer drawer : postDrawers) {
             if(drawer.getCalculatedPoints().size() <= 1)
                 drawer.march(field);
-            drawLineDrawerPath(drawer);
+            drawLineDrawerPath(drawer, this.getGraphics());
         }
         stroke(255);
         strokeWeight(4);
@@ -175,20 +271,13 @@ public class Sketch2 extends PApplet {
     }
 
     public void drawLineDrawerPath(LineDrawer drawer) {
-        ArrayList<PVector> calcPoints = drawer.getCalculatedPoints();
-        for(int i = calcPoints.size() - 1; i > 0; i--) {
-            PVector x = calcPoints.get(i);
-            x = field.planeToWindow(x);
-            float mapped = map(i, 0, calcPoints.size(), 0, 1);
-            fill(lerpColor(DarkColor, LightColor, mapped));
-            circle(x.x, x.y, map(i, 0,  calcPoints.size(), 10, 0));
-        }
+
     }
 
-    public void generateFieldNoise(FlowField flowField){
-        //Generate random seeds
-        angleSeed = (long) random(-16000000, 16000000);
-        intensitySeed = (long) random(-16000000, 16000000);
+    public void generateFieldNoise(FlowField flowField, long aSeed, long iSeed){
+
+        angleSeed = aSeed;
+        intensitySeed = iSeed;
 
         //For every row in the field, start a RowNoiserThread
         ArrayList<RowNoiserThread> noiserThreads = new ArrayList<RowNoiserThread>();
@@ -214,6 +303,13 @@ public class Sketch2 extends PApplet {
             if(noiserThreads.isEmpty())
                 notDone = false;
         }
+    }
+
+    public void generateFieldNoise(FlowField field){
+        //Generate random seeds
+        long aSeed = (long) random(-16000000, 16000000);
+        long iSeed = (long) random(-16000000, 16000000);
+        generateFieldNoise(field, aSeed, iSeed);
     }
 
     public void marchAsync(){
