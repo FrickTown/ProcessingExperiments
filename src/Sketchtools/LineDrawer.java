@@ -12,6 +12,7 @@ public class LineDrawer {
     private PVector dir;
     private int lifeRemaining;
     private ArrayList<PVector> calculatedPoints;
+    private Boolean readyToDraw = false;
 
     public LineDrawer(PVector pos, PVector dir, int lifeTime) {
         originalPos = pos.copy();
@@ -79,6 +80,7 @@ public class LineDrawer {
                 break;
             takeStep();
         }
+        readyToDraw = true;
     }
 
     public void marchConstant(FlowField field){
@@ -88,6 +90,7 @@ public class LineDrawer {
                 break;
             takeConstantStep();
         }
+        readyToDraw = true;
     }
 
     public PVector getOriginalDir() {
@@ -102,7 +105,14 @@ public class LineDrawer {
         return originalHP;
     }
 
-    public void resetDrawer(){
-
+    public void resetDrawer(FlowField field){
+        setPos(getOriginalPos().copy());
+        PVector newFlow = field.getFlowAtPoint(pos);
+        newFlow.z = 1;
+        setDir(newFlow);
+        setLifeRemaining(getOriginalHP());
+        getCalculatedPoints().clear();
+        getCalculatedPoints().add(getOriginalPos().copy());
+        readyToDraw = false;
     }
 }
