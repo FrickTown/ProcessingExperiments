@@ -1,11 +1,12 @@
 package FlowAndNoise;
 
 import Sketchtools.ImGuiMenu;
+import Sketchtools.ImGuiThread;
 import imgui.ImGui;
 import imgui.app.Configuration;
 import processing.core.PApplet;
 
-public class Sketch1_GUI extends ImGuiMenu {
+public class Sketch1_GUI extends ImGuiMenu<Sketch1_GUI> {
     public Sketch1_GUI(Sketch1 mainThread) {
         super(mainThread);
     }
@@ -23,5 +24,10 @@ public class Sketch1_GUI extends ImGuiMenu {
         /*if(mainThread instanceof Sketch2 x){
             ImGui.text("Total lines = " + (x.getDrawers().size() + x.getPostDrawers().size()));
         }*/
+    }
+
+    @Override
+    public void fetchValues() {
+
     }
 }

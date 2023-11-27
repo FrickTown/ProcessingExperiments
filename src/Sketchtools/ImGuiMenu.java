@@ -7,22 +7,25 @@ import imgui.app.Configuration;
 import imgui.type.ImInt;
 import processing.core.PApplet;
 
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-public abstract class ImGuiMenu extends Application {
+public abstract class ImGuiMenu<T> extends Application {
     protected PApplet mainThread;
+    protected ImGuiThread thread;
     @Override
     protected abstract void configure(Configuration config);
     @Override
     public abstract void process();
+    public abstract void fetchValues();
 
     public ImGuiMenu(PApplet mainThread){
         this.mainThread = mainThread;
     }
 
-    public static void main(PApplet mainThread, Class<? extends ImGuiMenu> menuType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        System.out.println(Arrays.toString(menuType.getConstructors()[0].getParameterTypes()));
-        launch(menuType.getConstructor(mainThread.getClass()).newInstance(mainThread));
+    public T getThis(){
+        return (T) this;
     }
 }

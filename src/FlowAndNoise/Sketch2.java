@@ -108,10 +108,12 @@ public class Sketch2 extends PApplet {
         DarkColor = darkColor;
     }
 
+    ImGuiThread imguiThread;
     FlowField field;
     ArrayList<LineDrawer> drawers;
     ArrayList<LineDrawer> postDrawers;
     long angleSeed;
+
     long intensitySeed;
     PGraphics drawnLines = null;
     Boolean showDrawnLines = true;
@@ -139,7 +141,7 @@ public class Sketch2 extends PApplet {
     }
     @Override
     public void setup() {
-        ImGuiThread imguiThread = new ImGuiThread(this, Sketch2_GUI.class);
+        imguiThread = new ImGuiThread(this, Sketch2_GUI.class);
         imguiThread.start();
         //Create a new field, generate some noise (multithreaded) and distort with the distortion function above
         field = new FlowField(this, 0.005f, 0.5f);
@@ -211,6 +213,8 @@ public class Sketch2 extends PApplet {
 
         fullRedraw = false;
         noLoop();
+        imguiThread.requestFetch();
+
     }
 
     @Override
@@ -280,7 +284,7 @@ public class Sketch2 extends PApplet {
         intensitySeed = iSeed;
 
         //For every row in the field, start a RowNoiserThread
-        ArrayList<RowNoiserThread> noiserThreads = new ArrayList<RowNoiserThread>();
+        ArrayList<RowNoiserThread> noiserThreads = new ArrayList<>();
         for(int y = 0; y < flowField.getField().length; y++){
             //Add them to a collection to keep track, and start them
             noiserThreads.add(new RowNoiserThread(y, new PVector[flowField.getField()[0].length], angleSeed, intensitySeed));
