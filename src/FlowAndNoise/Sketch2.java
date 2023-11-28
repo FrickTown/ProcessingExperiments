@@ -5,10 +5,8 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static java.util.Map.*;
 
@@ -36,22 +34,6 @@ public class Sketch2 extends PApplet {
 
     public void setPostDrawers(ArrayList<LineDrawer> postDrawers) {
         this.postDrawers = postDrawers;
-    }
-
-    public long getAngleSeed() {
-        return angleSeed;
-    }
-
-    public void setAngleSeed(long angleSeed) {
-        this.angleSeed = angleSeed;
-    }
-
-    public long getIntensitySeed() {
-        return intensitySeed;
-    }
-
-    public void setIntensitySeed(long intensitySeed) {
-        this.intensitySeed = intensitySeed;
     }
 
     public Boolean getShowDrawnLines() {
@@ -82,6 +64,14 @@ public class Sketch2 extends PApplet {
         return Palette1;
     }
 
+    public NoiseDataContainer getAngleNoiseData(){
+        return angleNoiseData;
+    }
+
+    public NoiseDataContainer getIntensityNoiseData(){
+        return intensityNoiseData;
+    }
+
     ImGuiThread imguiThread;
     FlowField field;
     ArrayList<LineDrawer> drawers;
@@ -96,12 +86,20 @@ public class Sketch2 extends PApplet {
     Boolean showHeatMap = false;
     boolean fullRedraw = false;
 
-    private ColorPalette Palette1 = ColorPalette.createFromStrings(
+    private final ColorPalette Palette1 = ColorPalette.createFromStrings("Palette1",
             entry("BGColor", "#DDF2FD"),
             entry("ShadeColor", "#DDF2FD"),
             entry("LightColor", "#427D9D"),
             entry("DarkColor", "#164863")
     );
+
+    private final NoiseDataContainer angleNoiseData = new NoiseDataContainer("angleNoise",
+            (long)random(-10000000, 100000000),
+            0.25f, 2);
+
+    private final NoiseDataContainer intensityNoiseData = new NoiseDataContainer("intensityNoise",
+            (long)random(-10000000, 100000000),
+            0.75f, 3);
 
     @Override
     public void settings() {
@@ -206,7 +204,7 @@ public class Sketch2 extends PApplet {
         }
         else if(mouseButton == RIGHT){
             PVector pos = field.windowToPlane(new PVector(mouseX, mouseY));
-            Distortion.RadialDistortion(field, pos, 200, 50, true);
+            Distortion.RadialDistortion(field, pos, 100, 50, false);
             fullRedraw = true;
             Tools.ResetDrawers(drawers, field);
             Tools.ResetDrawers(postDrawers, field);
@@ -254,16 +252,13 @@ public class Sketch2 extends PApplet {
 
     }
 
-    public void generateFieldNoise(FlowField flowField, long aSeed, long iSeed){
-
-        angleSeed = aSeed;
-        intensitySeed = iSeed;
+    public void generateFieldNoise(FlowField flowField){
 
         //For every row in the field, start a RowNoiserThread
         ArrayList<RowNoiserThread> noiserThreads = new ArrayList<>();
         for(int y = 0; y < flowField.getField().length; y++){
             //Add them to a collection to keep track, and start them
-            noiserThreads.add(new RowNoiserThread(y, new PVector[flowField.getField()[0].length], angleSeed, intensitySeed));
+            noiserThreads.add(new RowNoiserThread(y, new PVector[flowField.getField()[0].length], angleNoiseData, intensityNoiseData));
             noiserThreads.get(y).start();
         }
 
@@ -283,13 +278,6 @@ public class Sketch2 extends PApplet {
             if(noiserThreads.isEmpty())
                 notDone = false;
         }
-    }
-
-    public void generateFieldNoise(FlowField field){
-        //Generate random seeds
-        long aSeed = (long) random(-16000000, 16000000);
-        long iSeed = (long) random(-16000000, 16000000);
-        generateFieldNoise(field, aSeed, iSeed);
     }
 
     public void marchAsync(){

@@ -5,16 +5,23 @@ import java.awt.color.ColorSpace;
 import java.util.HashMap;
 
 public class ColorPalette extends HashMap<String, float[]> {
+        private String name;
+        public String getName(){
+            return name;
+        }
+        public ColorPalette(String name){
+            this.name = name;
+        }
         @SafeVarargs
-        public static ColorPalette createFromStrings(Entry<String, String>... entries){
-            ColorPalette out = new ColorPalette();
+        public static ColorPalette createFromStrings(String name, Entry<String, String>... entries){
+            ColorPalette out = new ColorPalette(name);
             for(Entry<String, String> x : entries){
                 out.put(x.getKey(), Color.decode(x.getValue()).getRGBColorComponents(null));
             }
             return out;
         }
-        public static ColorPalette createFromFloats(Entry<String, float[]>... entries){
-            ColorPalette out = new ColorPalette();
+        public static ColorPalette createFromFloats(String name, Entry<String, float[]>... entries){
+            ColorPalette out = new ColorPalette(name);
             for(Entry<String, float[]> x : entries){
                 out.put(x.getKey(), x.getValue());
             }

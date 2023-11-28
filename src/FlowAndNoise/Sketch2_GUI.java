@@ -7,7 +7,9 @@ import Sketchtools.Tools;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.app.Configuration;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import processing.core.PApplet;
 
@@ -15,8 +17,14 @@ import java.util.Arrays;
 
 public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
     ImGuiIO io;
-    ImInt angleSeed;
+    NoiseDataContainer angleNoiseData;
+    NoiseDataContainer intensityNoiseData;
     ImInt intensitySeed;
+    ImInt iLod;
+    ImFloat iFallOff;
+    ImInt angleSeed;
+    ImInt aLod;
+    ImFloat aFallOff;
     ColorPalette palette1;
 
     float[] BGColor_RGB;
@@ -41,11 +49,15 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
         config.setHeight(mainThread.displayHeight/2);
 
         angleSeed = new ImInt();
+        aLod = new ImInt();
+        aFallOff = new ImFloat();
+
         intensitySeed = new ImInt();
+        iLod = new ImInt();
+        iFallOff = new ImFloat();
 
         fetchValues();
     }
-    boolean lastClicked = false;
     @Override
     public void process() {
         io = ImGui.getIO();
@@ -56,55 +68,43 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
 
         //Menu options to render for sketch2
         ImGui.text("Hello, World!");
-        ImGui.inputInt("angleSeed", angleSeed);
-        ImGui.inputInt("intensitySeed", intensitySeed);
-        if(ImGui.button("Go")){
-            sketch.generateFieldNoise(sketch.getField(), angleSeed.longValue(), intensitySeed.longValue());
-            sketch.distort();
-            sketch.fullRedraw = true;
-            Tools.ResetDrawers(sketch.drawers, sketch.field);
-            sketch.getPostDrawers().clear();
-            sketch.redraw();
-        }
-        if(ImGui.collapsingHeader("Colors")){
-            if(ImGui.collapsingHeader("BGColor")){
-                if(ImGui.colorPicker3("BGColor", palette1.get("BGColor"))){
-                    System.out.println("Color changed: " + Arrays.toString(palette1.get("BGColor")));
-                }
-            }
-            if(ImGui.collapsingHeader("ShadeColor")){
-                if(ImGui.colorPicker3("ShadeColor", palette1.get("ShadeColor"))){
-                    System.out.println("Color changed: " + Arrays.toString(palette1.get("ShadeColor")));
-                }
-            }
 
-            if(ImGui.collapsingHeader("LightColor")){
-                if(ImGui.colorPicker3("LightColor", palette1.get("LightColor"))){
-                    if(ImGui.isMouseDown(0)){
-                        lastClicked = true;
-                        System.out.println("Mouse pressed");
-                    }
-                    //Funkar inte...
-                    if(!ImGui.isMouseDown(0) && lastClicked){
-                        lastClicked = false;
-                        System.out.println("Mouse released");
-                    }
-                    System.out.println("Color changed: " + Arrays.toString(palette1.get("LightColor")));
-                }
-            }
-            if(ImGui.collapsingHeader("DarkColor")){
-                if(ImGui.colorPicker3("DarkColor", palette1.get("DarkColor"))){
-                    System.out.println("Color changed: " + Arrays.toString(palette1.get("DarkColor")));
-                }
-            }
-        }
+        generateColorPalettePicker(palette1);
 
         ImGui.end();
     }
 
     public void fetchValues(){
-        angleSeed.set((int) sketch.getAngleSeed());
-        intensitySeed.set((int) sketch.getIntensitySeed());
+        angleNoiseData = sketch.getAngleNoiseData();
+        angleSeed.set((int) angleNoiseData.getSeed());
+        aFallOff.set(angleNoiseData.getFallOff());
+        aLod.set(angleNoiseData.getLod());
+
+        intensityNoiseData = sketch.getIntensityNoiseData();
+        intensitySeed.set((int) intensityNoiseData.getSeed());
+        iFallOff.set(intensityNoiseData.getFallOff());
+        iLod.set(intensityNoiseData.getLod());
+
         palette1 = sketch.getPalette1();
     }
+
+    void regenerateField(){
+        angleNoiseData.updateAll(
+                angleSeed.longValue(),
+                aFallOff.get(),
+                aLod.get()
+        );
+        intensityNoiseData.updateAll(
+                intensitySeed.longValue(),
+                iFallOff.get(),
+                iLod.get()
+        );
+        sketch.generateFieldNoise(sketch.getField());
+        sketch.distort();
+        sketch.fullRedraw = true;
+        Tools.ResetDrawers(sketch.drawers, sketch.field);
+        sketch.getPostDrawers().clear();
+        sketch.redraw();
+    }
+
 }
