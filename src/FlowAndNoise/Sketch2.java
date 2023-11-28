@@ -76,8 +76,6 @@ public class Sketch2 extends PApplet {
     FlowField field;
     ArrayList<LineDrawer> drawers;
     ArrayList<LineDrawer> postDrawers;
-    long angleSeed;
-    long intensitySeed;
     PGraphics drawnLines = null;
     Boolean showDrawnLines = true;
     PGraphics flowArrows = null;
@@ -94,11 +92,11 @@ public class Sketch2 extends PApplet {
     );
 
     private final NoiseDataContainer angleNoiseData = new NoiseDataContainer("angleNoise",
-            (long)random(-10000000, 100000000),
+            (int)random(-10000000, 100000000),
             0.25f, 2);
 
     private final NoiseDataContainer intensityNoiseData = new NoiseDataContainer("intensityNoise",
-            (long)random(-10000000, 100000000),
+            (int)random(-10000000, 100000000),
             0.75f, 3);
 
     @Override
@@ -215,6 +213,8 @@ public class Sketch2 extends PApplet {
     @Override
     public void keyPressed() {
         if(key == ENTER){
+            angleNoiseData.scrambleSeed();
+            intensityNoiseData.scrambleSeed();
             generateFieldNoise(field);
             distort();
             fullRedraw = true;
@@ -246,10 +246,6 @@ public class Sketch2 extends PApplet {
                 println(drawer.toString());
             }
         }
-    }
-
-    public void drawLineDrawerPath(LineDrawer drawer) {
-
     }
 
     public void generateFieldNoise(FlowField flowField){

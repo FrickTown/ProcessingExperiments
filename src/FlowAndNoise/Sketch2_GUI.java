@@ -19,12 +19,6 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
     ImGuiIO io;
     NoiseDataContainer angleNoiseData;
     NoiseDataContainer intensityNoiseData;
-    ImInt intensitySeed;
-    ImInt iLod;
-    ImFloat iFallOff;
-    ImInt angleSeed;
-    ImInt aLod;
-    ImFloat aFallOff;
     ColorPalette palette1;
 
     float[] BGColor_RGB;
@@ -48,14 +42,6 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
         config.setWidth(mainThread.displayWidth/2);
         config.setHeight(mainThread.displayHeight/2);
 
-        angleSeed = new ImInt();
-        aLod = new ImInt();
-        aFallOff = new ImFloat();
-
-        intensitySeed = new ImInt();
-        iLod = new ImInt();
-        iFallOff = new ImFloat();
-
         fetchValues();
     }
     @Override
@@ -68,43 +54,33 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
 
         //Menu options to render for sketch2
         ImGui.text("Hello, World!");
-
+        generateNoiseDataPanel(angleNoiseData, regenerateField());
+        generateNoiseDataPanel(intensityNoiseData, regenerateField());
         generateColorPalettePicker(palette1);
+
+
 
         ImGui.end();
     }
 
     public void fetchValues(){
         angleNoiseData = sketch.getAngleNoiseData();
-        angleSeed.set((int) angleNoiseData.getSeed());
-        aFallOff.set(angleNoiseData.getFallOff());
-        aLod.set(angleNoiseData.getLod());
-
         intensityNoiseData = sketch.getIntensityNoiseData();
-        intensitySeed.set((int) intensityNoiseData.getSeed());
-        iFallOff.set(intensityNoiseData.getFallOff());
-        iLod.set(intensityNoiseData.getLod());
 
         palette1 = sketch.getPalette1();
     }
 
-    void regenerateField(){
-        angleNoiseData.updateAll(
-                angleSeed.longValue(),
-                aFallOff.get(),
-                aLod.get()
-        );
-        intensityNoiseData.updateAll(
-                intensitySeed.longValue(),
-                iFallOff.get(),
-                iLod.get()
-        );
-        sketch.generateFieldNoise(sketch.getField());
-        sketch.distort();
-        sketch.fullRedraw = true;
-        Tools.ResetDrawers(sketch.drawers, sketch.field);
-        sketch.getPostDrawers().clear();
-        sketch.redraw();
+    Runnable regenerateField(){
+        return () -> {
+            sketch.generateFieldNoise(sketch.getField());
+            sketch.distort();
+            sketch.fullRedraw = true;
+            Tools.ResetDrawers(sketch.drawers, sketch.field);
+            sketch.getPostDrawers().clear();
+            sketch.redraw();
+
+        };
+
     }
 
 }
