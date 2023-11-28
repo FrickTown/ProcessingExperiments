@@ -56,7 +56,7 @@ public class LineDrawer {
     public void takeStep(){
         pos.x += (dir.x * dir.z);
         pos.y += (dir.y * dir.z);
-        System.out.println("["+lifeRemaining+"] - I'm at: " + pos + ", my dir is: " + dir);
+        //System.out.println("["+lifeRemaining+"] - I'm at: " + pos + ", my dir is: " + dir);
         calculatedPoints.add(pos.copy());
         lifeRemaining--;
     }
@@ -64,7 +64,7 @@ public class LineDrawer {
     public void takeConstantStep(){
         pos.x += (dir.x);
         pos.y += (dir.y);
-        System.out.println("["+lifeRemaining+"] - I'm at: " + pos + ", my dir is: " + dir);
+        //System.out.println("["+lifeRemaining+"] - I'm at: " + pos + ", my dir is: " + dir);
         calculatedPoints.add(pos.copy());
         lifeRemaining--;
     }

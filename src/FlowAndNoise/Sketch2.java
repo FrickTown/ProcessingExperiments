@@ -4,11 +4,13 @@ import Sketchtools.*;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
-import imgui.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static java.util.Map.*;
 
 public class Sketch2 extends PApplet {
 
@@ -76,36 +78,8 @@ public class Sketch2 extends PApplet {
         this.showHeatMap = showHeatMap;
     }
 
-    public static int getBGColor() {
-        return BGColor;
-    }
-
-    public static void setBGColor(int BGColor) {
-        Sketch2.BGColor = BGColor;
-    }
-
-    public static int getShadeColor() {
-        return ShadeColor;
-    }
-
-    public static void setShadeColor(int shadeColor) {
-        ShadeColor = shadeColor;
-    }
-
-    public static int getLightColor() {
-        return LightColor;
-    }
-
-    public static void setLightColor(int lightColor) {
-        LightColor = lightColor;
-    }
-
-    public static int getDarkColor() {
-        return DarkColor;
-    }
-
-    public static void setDarkColor(int darkColor) {
-        DarkColor = darkColor;
+    public ColorPalette getPalette1() {
+        return Palette1;
     }
 
     ImGuiThread imguiThread;
@@ -113,7 +87,6 @@ public class Sketch2 extends PApplet {
     ArrayList<LineDrawer> drawers;
     ArrayList<LineDrawer> postDrawers;
     long angleSeed;
-
     long intensitySeed;
     PGraphics drawnLines = null;
     Boolean showDrawnLines = true;
@@ -123,10 +96,12 @@ public class Sketch2 extends PApplet {
     Boolean showHeatMap = false;
     boolean fullRedraw = false;
 
-    static int BGColor = Color.decode("#DDF2FD").getRGB();
-    static int ShadeColor = Color.decode("#DDF2FD").getRGB();
-    static int LightColor = Color.decode("#427D9D").getRGB();
-    static int DarkColor = Color.decode("#164863").getRGB();
+    private ColorPalette Palette1 = ColorPalette.createFromStrings(
+            entry("BGColor", "#DDF2FD"),
+            entry("ShadeColor", "#DDF2FD"),
+            entry("LightColor", "#427D9D"),
+            entry("DarkColor", "#164863")
+    );
 
     @Override
     public void settings() {
@@ -152,7 +127,7 @@ public class Sketch2 extends PApplet {
         postDrawers = new ArrayList<LineDrawer>();
         drawers = new ArrayList<LineDrawer>();
 
-        //Genearate automatically placed drawers (Row above and row below)
+        //Generate automatically placed drawers (Row above and row below)
         int size = 50;
         PVector m50m50 = field.windowToPlane(new PVector(0, 0));
         for(int j = 0; j < 2; j++){
@@ -187,7 +162,8 @@ public class Sketch2 extends PApplet {
         if((drawnLines == null || fullRedraw) && showDrawnLines){
             thread("marchAsync");
         }
-        background(BGColor);
+
+        background(Palette1.asRGB("BGColor"));
 
         if(heatMap != null && showHeatMap){
             image(heatMap, 0, 0);
@@ -265,7 +241,7 @@ public class Sketch2 extends PApplet {
             PVector x = calcPoints.get(i);
             x = field.planeToWindow(x);
             float mapped = map(i, 0, calcPoints.size(), 0, 1);
-            context.fill(lerpColor(DarkColor, LightColor, mapped));
+            context.fill(lerpColor(Palette1.asRGB("DarkColor"), Palette1.asRGB("LightColor"), mapped));
             try{
                 context.circle(x.x, x.y, map(i, 0,  calcPoints.size(), 10, 0));
             } catch(ArrayIndexOutOfBoundsException e){
@@ -337,5 +313,4 @@ public class Sketch2 extends PApplet {
         heatMap = Tools.GenerateHeatMapZ(field, 1);
         redraw();
     }
-
 }

@@ -7,6 +7,7 @@ import processing.core.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Tools {
     public static double easeOutExpo(double x){
