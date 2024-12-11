@@ -27,6 +27,14 @@ public class Tools {
     public static double easeOutCirc(double x){
         return Math.sqrt(1 - Math.pow(x - 1, 2));
     }
+
+    public static double easeInOutCirc(double x) {
+        return x < 0.5
+          ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
+          : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2;
+        
+    }
+
     public static double easeInOutSine(double x){
         return -(Math.cos(Math.PI * x) - 1) / 2;
 
