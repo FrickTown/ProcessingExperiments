@@ -12,8 +12,8 @@ public class Sketch1 extends PApplet{
 
     ArrayList<Worm> Worms;
     PVector center;
-    int rows = 15;
-    int columns = 15;
+    int rows = 30;
+    int columns = 30;
 
     public void settings() {
         size(1920, 1080, P3D);
@@ -26,13 +26,15 @@ public class Sketch1 extends PApplet{
         float maxRadius = 100;
         float amp = 20;
         float maxTimeOffset = PI;
-        for(int y = 0; y < height; y += height / rows){
-            for(int x = 0; x < width; x += width / columns){
-                PVector pos = new PVector(x, y);
+        for(float y = 0; y < height; y += height / rows){
+            float modY = (float)Tools.easeInOutCirc(y/height) * height;
+            for(float x = 0; x < width; x += width / columns){
+                float modX = (float)Tools.easeInOutCirc(x/width) * width;
+                PVector pos = new PVector(modX, modY);
+                println(pos);
                 float fromCenter = pos.dist(center) + 1;
                 float invFC = (maxRadius / fromCenter);
                 float easedInv = (float)Tools.easeOutCirc(invFC);
-                pos.mult(easedInv);
                 Worms.add(new Worm(pos, fromCenter, lerp(minRadius, maxRadius, easedInv), lerp(maxTimeOffset, 0, easedInv), amp));
 
             }
@@ -52,7 +54,7 @@ public class Sketch1 extends PApplet{
 
     public void draw() {
         push();
-            translate(width/4, height/4);
+            //translate(width/4, height/4);
             noStroke();
             background(color(0));
             for (Worm worm : Worms) {
