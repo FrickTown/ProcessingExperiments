@@ -2,6 +2,8 @@ package RainbowWorms;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import Sketchtools.Tools;
 import processing.core.PApplet;
@@ -13,23 +15,26 @@ public class Sketch1 extends PApplet{
     ArrayList<Worm> Worms;
     PVector center;
     int rows = 30;
-    int columns = 30;
+    int columns = 50;
+
+    PVector ViewPort;
 
     public void settings() {
         size(1920, 1080, P3D);
     }
 
     public void setup() {
+        ViewPort = new PVector(0, 0, 0);
         center = new PVector(width / 2, height / 2);
         Worms = new ArrayList<Worm>();
         float minRadius = 50;
         float maxRadius = 100;
-        float amp = 20;
+        float amp = 75;
         float maxTimeOffset = PI;
         for(float y = 0; y < height; y += height / rows){
-            float modY = (float)Tools.easeInOutCirc(y/height) * height;
+            float modY = (float)Tools.easeInOutBack(y/height) * height;
             for(float x = 0; x < width; x += width / columns){
-                float modX = (float)Tools.easeInOutCirc(x/width) * width;
+                float modX = (float)Tools.easeInOutBack(x/width) * width;
                 PVector pos = new PVector(modX, modY);
                 println(pos);
                 float fromCenter = pos.dist(center) + 1;
@@ -54,13 +59,37 @@ public class Sketch1 extends PApplet{
 
     public void draw() {
         push();
-            //translate(width/4, height/4);
+            translate(ViewPort.x, ViewPort.y, ViewPort.z);
             noStroke();
             background(color(0));
             for (Worm worm : Worms) {
                 worm.draw(this);
             }
         pop();
+        if(keyPressed)
+            handleInput();
+    }
+
+    public void handleInput(){
+        println(keyCode);
+        switch (keyCode) {
+            case 37: //left
+                    ViewPort.x -= 10;
+                break;
+            case 38: //up
+                ViewPort.y -= 10;
+                break;
+            
+            case 39: //right
+                ViewPort.x += 10;
+                break;
+            
+            case 40: //down
+                ViewPort.y += 10;
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -82,11 +111,11 @@ class Worm {
         this.center = center;
         int colorOffset = (int)(1000 * timeOffset); 
         float nextRad = maxRadius;
-        while(nextRad >= apexRadius){
+        while(nextRad >= apexRadius) {
             joints.add(new Joint(center.copy(), nextRad, amplitude, timeOffset, colorOffset));
             nextRad -= jointDiff;
             colorOffset += jointDiff * 5;
-            timeOffset += (1 / jointDiff) * (timeScale / 2);
+            timeOffset += (1 / jointDiff) * (timeScale / 1);
         }
         System.out.println(joints.size());
         
