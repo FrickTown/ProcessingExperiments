@@ -2,8 +2,6 @@ package RainbowWorms;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import Sketchtools.Tools;
 import processing.core.PApplet;
@@ -15,7 +13,7 @@ public class Sketch1 extends PApplet{
     ArrayList<Worm> Worms;
     PVector center;
     int rows = 30;
-    int columns = 50;
+    int columns = 30;
 
     PVector ViewPort;
 
@@ -32,9 +30,9 @@ public class Sketch1 extends PApplet{
         float amp = 75;
         float maxTimeOffset = PI;
         for(float y = 0; y < height; y += height / rows){
-            float modY = (float)Tools.easeInOutBack(y/height) * height;
+            float modY = (float)Tools.easeInOutCirc(y/height) * height;
             for(float x = 0; x < width; x += width / columns){
-                float modX = (float)Tools.easeInOutBack(x/width) * width;
+                float modX = (float)Tools.easeInOutCirc(x/width) * width;
                 PVector pos = new PVector(modX, modY);
                 println(pos);
                 float fromCenter = pos.dist(center) + 1;
@@ -49,9 +47,9 @@ public class Sketch1 extends PApplet{
             @Override
             public int compare(Worm x, Worm y){
                 if(x.fromCenter > y.fromCenter)
-                    return -1;
-                else if(x.fromCenter < y.fromCenter)
                     return 1;
+                else if(x.fromCenter < y.fromCenter)
+                    return -1;
                 return 0;
             }
         });
@@ -115,7 +113,7 @@ class Worm {
             joints.add(new Joint(center.copy(), nextRad, amplitude, timeOffset, colorOffset));
             nextRad -= jointDiff;
             colorOffset += jointDiff * 5;
-            timeOffset += (1 / jointDiff) * (timeScale / 1);
+            timeOffset += (1 / jointDiff) * (timeScale / 3);
         }
         System.out.println(joints.size());
         
