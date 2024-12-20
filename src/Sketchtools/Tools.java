@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class Tools {
+
+    public static double noEase(double x){
+        return x;
+    }
     public static double easeOutExpo(double x){
         return x == 1 ? 1 : 1 - Math.pow(2, -10 * x);
     }
@@ -30,52 +34,26 @@ public class Tools {
 
     public static double easeInOutCirc(double x) {
         return x < 0.5
-          ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
-          : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2;
+        ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
+        : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2;
         
+    }
+    
+    // Sine easing
+    public static double easeInSine(double x) {
+        return 1 - Math.cos((x * Math.PI) / 2);
+    }
+
+    public static double easeOutSine(double x) {
+        return Math.sin((x * Math.PI) / 2);
     }
 
     public static double easeInOutSine(double x){
         return -(Math.cos(Math.PI * x) - 1) / 2;
-
     }
 
     public static double easeOutQuad(double x){
         return 1 - (1 - x) * (1 - x);
-
-    }
-
-    public static double easeInOutBack(double x){
-        double c1 = 1.70158;
-        double c2 = c1 * 1.525;
-        
-        return x < 0.5
-          ? (Math.pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
-          : (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
-            
-    }
-
-    public static double easeOutBounce(double x) {
-        double n1 = 7.5625;
-        double d1 = 2.75;
-        
-        if (x < 1 / d1) {
-            return n1 * x * x;
-        } else if (x < 2 / d1) {
-            return n1 * (x -= 1.5 / d1) * x + 0.75;
-        } else if (x < 2.5 / d1) {
-            return n1 * (x -= 2.25 / d1) * x + 0.9375;
-        } else {
-            return n1 * (x -= 2.625 / d1) * x + 0.984375;
-        }
-        
-    }
-    
-    public static double easeInOutBounce(double x) {
-        return x < 0.5
-          ? (1 - easeOutBounce(1 - 2 * x)) / 2
-          : (1 + easeOutBounce(2 * x - 1)) / 2;
-        
     }
 
     public static PGraphics DrawFlowArrows(FlowField field, float intensity, int alpha, int skip){
