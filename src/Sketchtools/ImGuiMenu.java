@@ -2,6 +2,7 @@ package Sketchtools;
 
 import FlowAndNoise.NoiseDataContainer;
 import FlowAndNoise.Sketch2;
+import RainbowWorms.*;
 import imgui.ImGui;
 import imgui.app.Application;
 import imgui.app.Configuration;
@@ -16,21 +17,11 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class ImGuiMenu<T> extends Application {
-    protected PApplet mainThread;
-    protected ImGuiThread thread;
-    @Override
-    protected abstract void configure(Configuration config);
-    @Override
-    public abstract void process();
-    public abstract void fetchValues();
+public abstract class ImGuiMenu<T> extends IGMenu<ImGuiMenu> {
 
     public ImGuiMenu(PApplet mainThread){
+        super(mainThread);
         this.mainThread = mainThread;
-    }
-
-    public T getThis(){
-        return (T) this;
     }
 
     protected void generateColorPalettePicker(ColorPalette palette){

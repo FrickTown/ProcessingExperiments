@@ -1,5 +1,4 @@
 package Sketchtools;
-import FlowAndNoise.Sketch2_GUI;
 import imgui.app.Application;
 import processing.core.PApplet;
 
@@ -8,10 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 public class ImGuiThread extends Thread{
 
     PApplet mainThread;
-    Class<? extends ImGuiMenu> menuClass;
-    ImGuiMenu<? extends ImGuiMenu> menu;
+    Class<? extends IGMenu> menuClass;
+    IGMenu<? extends IGMenu> menu;
 
-    public ImGuiThread(PApplet mainThread, Class<? extends ImGuiMenu> menuClass) {
+    public ImGuiThread(PApplet mainThread, Class<? extends IGMenu> menuClass) {
         this.mainThread = mainThread;
         this.menuClass = menuClass;
         try {
@@ -31,10 +30,11 @@ public class ImGuiThread extends Thread{
     }
 
     public void requestFetch(){
-        menu.fetchValues();
+        menu.fetchValueMap();
     }
 
-    public ImGuiMenu<? extends ImGuiMenu> getMenu(){
+    public IGMenu<? extends IGMenu> getMenu(){
         return menu;
     }
+
 }

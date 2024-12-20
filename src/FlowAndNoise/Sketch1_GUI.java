@@ -27,7 +27,7 @@ public class Sketch1_GUI extends ImGuiMenu<Sketch1_GUI> {
     }
 
     @Override
-    public void fetchValues() {
+    public void fetchValueMap() {
 
     }
 }

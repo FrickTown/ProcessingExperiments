@@ -14,6 +14,7 @@ import imgui.type.ImInt;
 import processing.core.PApplet;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
     ImGuiIO io;
@@ -42,7 +43,7 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
         config.setWidth(mainThread.displayWidth/2);
         config.setHeight(mainThread.displayHeight/2);
 
-        fetchValues();
+        fetchValueMap();
     }
     @Override
     public void process() {
@@ -81,6 +82,11 @@ public class Sketch2_GUI extends ImGuiMenu<Sketch2_GUI> {
 
         };
 
+    }
+    @Override
+    public Map<String, ?> fetchValueMap() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'fetchValueMap'");
     }
 
 }
