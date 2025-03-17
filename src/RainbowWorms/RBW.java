@@ -9,6 +9,7 @@ import java.util.AbstractMap.SimpleEntry;
 import Sketchtools.IGMenu;
 import Sketchtools.ImGuiThread;
 import Sketchtools.Tools;
+import imgui.app.Color;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PVector;
@@ -21,6 +22,7 @@ public class RBW extends PApplet{
     float maxMaxRadius = 100;
     float minMaxRadius = 50;
     float maxTimeOffset = 2*PI;
+    float globalTimeIncr = 0.1f;
     
     // Wormspace
     float timeScale = 3;
@@ -109,6 +111,7 @@ public class RBW extends PApplet{
         }  
     }
 
+    
 
     public void settings() {
         size(1920, 1080, P3D);
@@ -141,7 +144,7 @@ public class RBW extends PApplet{
             SortFlag = new SimpleEntry<Boolean, int[]>(false, SortFlag.getValue());
         }
 
-        GlobalTime += 0.1;
+        GlobalTime += globalTimeIncr;
 
     }
 
